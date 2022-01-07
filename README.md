@@ -12,3 +12,4 @@
 - [Лекция Охотина про LL-языки](https://users.math-cs.spbu.ru/~okhotin/teaching/fg_2019/okhotin_fg_2019_l12.pdf)
 - [Продолжение лекции Охотина](https://users.math-cs.spbu.ru/~okhotin/teaching/fg_2019/okhotin_fg_2019_l13.pdf)
 - [Статья Волкова про синхронизирующиеся автоматы](https://kadm.kmath.ru/files/synchro1.pdf)
+- [Решение регулярных уравнений. Реализация Егора Смирнова (ИУ9)](https://smegdm.github.io/tfl/lab2/regex_system_solver/index.html)
