@@ -11,3 +11,4 @@
 - [CYK онлайн](https://www.xarg.org/tools/cyk-algorithm/)
 - [Лекция Охотина про LL-языки](https://users.math-cs.spbu.ru/~okhotin/teaching/fg_2019/okhotin_fg_2019_l12.pdf)
 - [Продолжение лекции Охотина](https://users.math-cs.spbu.ru/~okhotin/teaching/fg_2019/okhotin_fg_2019_l13.pdf)
+- [Статья Волкова про синхронизирующиеся автоматы](https://kadm.kmath.ru/files/synchro1.pdf)
