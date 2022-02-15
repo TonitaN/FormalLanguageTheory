@@ -32,3 +32,4 @@
 - [Статья Волкова про синхронизирующиеся автоматы](https://kadm.kmath.ru/files/synchro1.pdf)
 - [Решение регулярных уравнений. Реализация Егора Смирнова (ИУ9)](https://smegdm.github.io/tfl/lab2/regex_system_solver/index.html)
 - [Минимизатор конечных автоматов онлайн](https://aswaddev.github.io/dfa-minimizer/)
+- [Анализатор КС-грамматик онлайн (3 в 1: LL(1), LR(0-1), неоднозначность)](http://mdaines.github.io/grammophone/#/)
