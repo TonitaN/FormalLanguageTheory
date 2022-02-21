@@ -30,7 +30,7 @@ CheckStrangePumps {
   , <Filter (e.F)(e.S)> : e.SS
    = <Putout 0 'Possibly regular nonterminals: '<PrintList e.SS>>;
   (e.S)(e.F)(e.FPumps)(e.Rules)(e.Constant)(s.N (s.w e.X s.N e.Y)) e.SP
-  , <String s.w e.X> :
+  , <TerminalString s.w e.X> :
   {True  
     , <CheckPump s.N (s.w e.X)(e.Constant)(e.Rules)(e.Y)> :
     { True
