@@ -1,0 +1,16 @@
+S -> abbzcTW
+W -> abzcWT
+W -> aPI
+T -> aPI
+P -> bP
+P -> z
+I -> zI
+I -> bB
+I -> cJ
+I -> c
+J -> Wc
+J -> Jc
+I -> dPI
+B -> bB
+B -> c
+B -> dPI

@@ -1,0 +1,292 @@
+$ENTRY Go
+  { 
+	= <Open 'r' 1 'test_Err1.txt'><RegularityCheckerAux () <ReadGrammar <Trim <Get 1>>> ()><Close 1>;
+  }
+
+RegularityCheckerAux {
+  e.x (e.v) s.er e.err (e.w) e.y = <Putout 0 s.er e.err><RegularityCheckerAux ()e.y('Error!') >;
+  e.x ('Error!')
+   = <Putout 0 'The analysis is terminated due to the syntax errors.'>;
+  () e.Rules ()
+  , <Productive ( ) e.Rules> : e.NTerms
+  , <MapPumping (e.Rules)e.NTerms> :
+  { e.MapPumpings = <RegularityComplete Start (e.Rules) e.MapPumpings>;
+  };
+}
+
+RegularityComplete {
+  Start (e.Rules) e.MapPumpings
+  , <Amogus ( )( )( )( )e.MapPumpings> :
+  { ( )( )( )(e.Constant) e.X = <Putout 0 'All the nonterminals are regulars.'>;
+    (e.Suspicious)(e.Failed)(e.FPumps)(e.Constant) e.StrangePumps
+         = <Putout 0 'Suspicious nonterminals: '<PrintList e.Failed>>
+	   <Putout 0 'Suspicious pump trees: '<PrintList e.FPumps>>
+	   <CheckStrangePumps (e.Suspicious)(e.Failed)(e.FPumps)(e.Rules)(e.Constant)e.StrangePumps>;
+  };
+}
+
+CheckStrangePumps {
+  (e.S)(e.F)(e.FPumps)(e.Rules)(e.Constant)
+  , <Filter (e.F)(e.S)> : e.SS
+   = <Putout 0 'Possibly regular nonterminals: '<PrintList e.SS>>;
+  (e.S)(e.F)(e.FPumps)(e.Rules)(e.Constant)(s.N (s.w e.X s.N e.Y)) e.SP
+  , <String s.w e.X> :
+  {True  
+    , <CheckPump s.N (s.w e.X)(e.Constant)(e.Rules)(e.Y)> :
+    { True
+       = <CheckStrangePumps (e.S)(e.F)(e.FPumps)(e.Rules)(e.Constant) e.SP>;
+      False
+       = <Putout 0 'Suspicious pump for 's.N': 's.w e.X s.N e.Y><CheckStrangePumps (e.S)(e.F s.N)(e.FPumps)(e.Rules)(e.Constant) e.SP>;      
+    };
+   False = <Putout 0 'Failed to analyse regularity: 's.N><Putout 0 'Pump for 's.N': 's.w e.X s.N e.Y>
+          <CheckStrangePumps (e.S)(e.F s.N)(e.FPumps)(e.Rules)(e.Constant)e.SP>;
+  };
+}
+
+Amogus {
+  ( )( )( )(e.Constant) e.P1 ('Const' e.C) e.P2
+    = <Amogus ( )( )( )(e.Constant e.C) e.P1 e.P2>; 
+  (e.Suspicious)( )( )(e.Constant) e.X1 (s.N (e.RHS)) e.X2
+  , <Element s.N e.Suspicious> : False
+    = <Amogus (e.Suspicious s.N)( )( )(e.Constant) e.X1 (s.N (e.RHS)) e.X2>;
+  (e.Suspicious)(e.Failed)(e.FPumps)(e.Constant) e.X1 (s.N (e.Str s.N e.RHS)) e.X2
+  , <String e.Str> : True
+  , <Intersection (e.RHS) e.Suspicious> : True
+  , e.Failed :
+  { e.F1 s.N e.F2 = <Amogus (e.Suspicious)(e.Failed)(e.FPumps (s.N (e.Str s.N e.RHS)))(e.Constant) e.X1 e.X2>;
+    e.Z = <Amogus (e.Suspicious)(e.Failed s.N)(e.FPumps (s.N (e.Str s.N e.RHS)))(e.Constant) e.X1 e.X2>;
+    };
+  (e.Suspicious)(e.Failed)(e.FPumps)(e.Constant) e.StrangePumps
+    = (e.Suspicious)(e.Failed)(e.FPumps)(e.Constant)e.StrangePumps;
+}
+
+CheckPump {
+  s.N (e.Phi1) (e.Const) (e.Rules) (e.Phi2)
+  , <IterateDerives (e.Phi1)(e.Rules)(e.Phi1)(e.Phi2)(e.Phi2)> :
+  { True = <CheckPump s.N  Start (e.Const)(e.Rules)(e.Phi2)>;
+    False = False;
+  };
+  s.N Start (e.C1 (s.N (e.Const)) e.C2) (e.Rules)(e.Phi2)
+  , <IterateDerives (e.Const)(e.Rules)(e.Const)(e.Phi2)(e.Phi2)> :
+  { True = <CheckPump s.N Start (e.C2) (e.Rules)(e.Phi2)>;
+    False = False;
+  };
+  s.N Start (e.Const)(e.Rules)(e.Phi2) = True;
+}
+
+Productive {
+  (e.NT) e.R1 (s.NT (e.RHS)) e.R2
+  , <Element s.NT e.NT> : False
+    = <Productive (e.NT s.NT) e.R2>;
+  (e.NT) e.R = e.NT;
+}
+
+MapPumping {
+  (e.Rules) = ;
+  (e.Rules) s.T e.X = <FilterPumps ( ) s.T <PumpTree ('II')(e.Rules)(<InitPump s.T (e.Rules)>)>><MapPumping (e.Rules) e.X>;
+}
+
+IterateDerives {
+  ( )(e.Rules)(e.String)(e.SF)(e.Incr) = False;
+  (s.T e.TT)(e.Rules)(e.String)(e.SF)(e.Incr)
+  , <Derives (e.Rules)(<Smpl e.String (e.SF)>)> :
+  { True = True;
+    False = <IterateDerives (e.TT)(e.Rules)(e.String)(e.SF e.Incr)(e.Incr)>;
+    };
+}
+
+Derives {
+ (e.Rules) e.D1 (e.String (e.String)) e.D2 = True;
+ (e.Rules) e.D1 (e.Str (s.N e.Str2)) e.D2
+ , <Lesser (s.N e.Str2) e.Str> : True
+ , e.Rules : e.R1 (s.N (e.RHS)) e.R2
+ , <Smpl e.Str (e.RHS e.Str2)> : e.NewPair
+ , <Element (e.NewPair) e.D1 (e.Str (s.N e.Str2)) e.D2> : False
+   = <Derives (e.Rules) e.D1 (e.Str (s.N e.Str2)) e.D2 (e.NewPair)>;
+ (e.Rules) e.Z = False;
+}
+
+TurchinPair {
+  (s.x e.y)(s.x e.yy) = <TurchinPair (e.y)(e.yy)>;
+  ()() = True;
+  ((s.x e.T) e.A)(e.Str (s.x e.TT) e.B)
+  , <String e.Str> : True
+     = <TurchinPair go (e.A)(e.B)>;
+  go (e.A t.y)(e.B t.y) = <TurchinPair ggo (e.A)(e.B)>;
+  ggo (e.A t.y)(e.B t.y) = <TurchinPair ggo (e.A)(e.B)>;
+  ggo ((s.x e.T) e.A)((s.x e.TT) e.B)
+     = <TurchinPair ggo (e.A)(e.B)>;
+  ggo ()(e.w) = True;
+  e.Z = False;
+}
+
+CoincideModuloTime {
+  ((t.n e.x) e.r1)((t.n e.xx) e.r2) = <CoincideModuloTime (e.r1)(e.r2)>;
+  ()() = True;
+  t.x t.xx = False;
+}
+
+TurchinFree {
+  (e.Str1 e.Str2 e.XX) e.P1 (e.Str1 e.X) e.P2
+  , <CoincideModuloTime (e.X)(e.XX)> : True = False;
+  t.Pump e.Pumps
+  , e.Pumps : e.P1 t.Pump2 e.P2
+  , <TurchinPair t.Pump2 t.Pump> : True
+   = False;
+   e.Z = True;
+}
+
+InitPump {
+ s.T (e.R1 (s.T (e.RHS)) e.R2) = (<AssignNewPair ('I')()e.RHS>) <InitPump s.T (e.R2)>;
+ e.Z = ;
+}
+
+FilterPumps {
+  (e.Terminals) s.T e.X (e.Str) e.XX
+  , <TerminalString e.Str> : True
+    = <FilterPumps (e.Terminals (s.T (e.Str))) s.T e.X e.XX>;
+  (e.Terminals) s.T e.X (e.P1 s.T e.P2) e.XX
+  , (e.P1)(e.P2) : (s.Y e.Y)(s.YY e.YY)
+   = (s.T (e.P1 s.T e.P2))<FilterPumps (e.Terminals) s.T e.XX>;
+   (e.Terminals) s.T e.Rest = ('Const' e.Terminals);
+}
+
+PumpTree {
+  (e.Time)(e.Rules)(e.CurrentPump)
+  , e.CurrentPump : e.C1 (e.S1 (s.N e.Tx) e.S2) e.C2
+  , <String e.S1> : True
+  , e.Rules : e.Rl1 (s.N (e.NR)) e.Rl2
+  , <AssignNewPair (e.Time)(e.S2) e.NR> : e.NewPump
+  , <TurchinFree (e.S1 e.NewPump) e.CurrentPump> : True
+   = <PumpTree (e.Time'I')(e.Rules)(e.CurrentPump (e.S1 e.NewPump))>;
+  (e.Time)(e.Rules)(e.CurrentPump) = <DeleteTime e.CurrentPump>;
+}
+
+AssignNewPair {
+  (e.Time)(e.S2) s.X e.Y
+  , <Terminals> : 
+  { e.T1 s.X e.T2
+       = s.X <AssignNewPair (e.Time)(e.S2) e.Y>;
+    e.Z = (s.X e.Time) <AssignNewPair go (e.Time) e.Y> e.S2;
+    };
+  go (e.Time) = ;
+  (e.Time)((s.X e.TT) e.S2)
+   , <Terminals> 
+   : {
+     e.T1 s.X e.T2 = s.X <AssignNewPair (e.Time)(e.S2)>;
+     e.Z = (s.X e.TT) e.S2;
+   };
+   (e.Time)() = ;
+  go (e.Time) s.X e.Y
+   = (s.X e.Time) <AssignNewPair go (e.Time) e.Y>;
+}
+
+DeleteTime {
+  e.x (e.y (s.N e.Time) e.yy) e.xx
+    = e.x <DeleteTime (e.y s.N e.yy) e.xx>;
+  e.Z = e.Z;
+}
+
+/*******************************************************************************/
+/*                                  AUXILIARIES                                */     
+/*******************************************************************************/
+
+TerminalString {
+ e.x s.y e.xx
+ , <NonTerminals> : e.y s.y e.yy = False;
+ e.z = True; 
+}
+
+Smpl {
+  s.x e.y (s.x e.z) = <Smpl e.y (e.z)>;
+  e.y s.x (e.z s.x) = <Smpl e.y (e.z)>;
+  e.y (e.z) = e.y (e.z);
+}
+
+String {
+  e.x (e.y) e.z = False;
+  e.Z = True;
+}
+
+PrintList {
+ = 'none.';
+ s.x = s.x'.';
+ (s.u (e.u)) = s.u'->'e.u'.';
+ s.x e.y = s.x', '<PrintList e.y>;
+ (s.u (e.u)) e.y = s.u' -> 'e.u', '<PrintList e.y>;
+}
+
+Element {
+ t.x e.y1 t.x e.y2 = True;
+ e.Z = False;
+}
+
+Intersection {
+ (e.x s.1 e.xx) e.y s.1 e.yy = True;
+ (e.x) e.y = False;
+} 
+
+Filter {
+ (e.x s.N e.xx)(e.y s.N e.yy) = <Filter (e.x s.N e.xx)(e.y e.yy)>;
+ (e.w)(e.u) = e.u;
+}
+
+Lesser {
+  ()e.W = True;
+  (s.k e.X) s.kk e.Y = <Lesser (e.X) e.Y>;
+  (e.X) e.Y = False;
+}
+
+NonTerminals {
+  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+}
+
+Terminals {
+ = 'abcdefghijklmopqrstuvwxyz';
+}
+
+/*********************************************************************************/
+/*                                 PARSER                                        */
+/*********************************************************************************/
+
+SyntOK {
+  (e.Alphabet) s.x
+  , e.Alphabet : e.A1 s.x e.A2
+   = True;   
+  (e.Alphabet) s.x e.y
+  , e.Alphabet : e.A1 s.x e.A2
+   = <SyntOK (e.Alphabet) e.y>;
+  (e.Alphabet) e.Z = False;
+}
+
+ReadGrammar {
+  e.N'->'e.RHS 0
+  , <NonTerminals> : 
+   { e.x1 e.N e.x2
+     , e.N : s.xx
+     , <SyntOK (<NonTerminals><Terminals>)e.RHS> :
+     { True = (e.N (e.RHS));
+       False = ()'Incorrect RHS: 'e.RHS;
+     };
+    e.Z = ()'Incorrect LHS: 'e.N;
+    };
+  e.N'->'e.RHS
+  , <NonTerminals> : 
+   { e.x1 s.N e.x2
+     , e.N : s.xx
+     , <SyntOK (<NonTerminals><Terminals>)e.RHS> :
+     { True = (e.N (e.RHS))<ReadGrammar <Trim <Get 1>>>;
+       False = ()'Incorrect RHS: 'e.RHS <ReadGrammar <Trim <Get 1>>>;
+     };
+    e.Z = ()'Incorrect LHS: 'e.N <ReadGrammar <Trim <Get 1>>>;
+    };
+  0 = ;
+   = <ReadGrammar <Trim <Get 1>>>;
+  e.Z = ()'Incorrect line: 'e.Z <ReadGrammar <Trim <Get 1>>>;
+}
+
+Trim {
+  e.x' 'e.xx = e.x<Trim e.xx>;
+  e.Z = e.Z;
+}
+
