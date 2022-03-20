@@ -11,12 +11,10 @@ $ENTRY Go
 	                <Close 1><Close 2><Close 3><Close 4><Close 5>;
   }
 
-/* Мы разрешаем страшное: переносить правила грамматики в произвольной позиции на новую строчку. */
 ReadGrammar {
  e.x 0 = e.x;
  e.x = e.x <ReadGrammar <Get 5>>; }
 
-/* Метаконстанты (параметры) входной грамматики. У выходной метаконстанты отличаются только разделителем. */
 Metaterms {
  = ('START_ITER') ('END_ITER') ('START_NTERM') ('END_NTERM') ('END_ALT') ('START_ALT') ('SEP_ALT') ('SEP_RULE') 
    ('START_CONST') ('END_CONST') ('START_RULE') ('END_RULE') ('L_PAREN') ('R_PAREN');
@@ -92,7 +90,6 @@ ExtractRegexes {
   e.Otherwise = ERROR 'Constant or nonterminal syntax is not defined.';  
 }
 
-/* Специализация грамматики метаконстант. */
 Reflexion {
   (e.Syntax) e.1 0
   , <ExtractRegexes ( ) e.Syntax> :
@@ -108,7 +105,6 @@ SubPattern {
   '*' (e.Num) = 'e.'e.Num;
   '+' (e.Num) = 's.'e.Num' e.'e.Num; }
 
-/* Порождение функций парсинга регулярок. */
 RegexGenerator {
   (e.Call)(e.Conditions)(e.Functions) (e.Num) (e.Sort) '('s.Letter')'s.Iter e.Rest
   , <NotIn s.Letter '.'> : True
