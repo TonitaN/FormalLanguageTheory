@@ -21,7 +21,10 @@ Metaterms {
 }
 
 GSRecursion { 
-  s.Flag s.Stream e.X 0 = ;
+  s.Flag s.Stream e.X 0, <Trim e.X> :
+    { /* EMPTY */ = ;
+      e.Otherwise = <GetSyntax s.Flag s.Stream e.X>;
+    };
   s.Flag s.Stream e.X = <GetSyntax s.Flag s.Stream e.X><GSRecursion s.Flag s.Stream <Get s.Stream>>;}
 
 GetSyntax {
@@ -35,6 +38,10 @@ GetSyntax {
      , <Trim e.1 e.2> : /* EMPTY */  = ((e.PrefToken s.Flag e.SuffToken) <Quote ()<Trim e.3>>);
   s.Flag s.Stream e.1 'CNAME'e.2'='e.3 = (('C's.Flag'NAME') <Trim e.3>);
   s.Flag s.Stream e.1 'NNAME'e.2'='e.3 = (('N's.Flag'NAME') <Trim e.3>);
+  s.Flag s.Stream e.1, <Trim e.2> : 
+    { /* EMPTY */ = ;
+      e.Otherwise = <Putout 0 'Syntax error in the grammar syntax.'>;
+    };
 }
 
 Completion {
