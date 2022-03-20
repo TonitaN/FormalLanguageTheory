@@ -49,8 +49,6 @@ Completion {
  s.Flag (e.Z) = e.Z; }
 
 Trim {
- ' 'e.1 = <Trim e.1>;
- e.1' ' = <Trim e.1>;
  e.1 ' ' e.2 = <Trim e.1 e.2>; 
  e.Z = e.Z; }
 
@@ -60,9 +58,9 @@ Quote {
   ( )'\'' e.2
    = <Quote ('\\\'') e.2>;
   (e.Processed) e.1 s.1'\"' e.2
-  , <NotIn s.1 '\\'> : True = <Quote (e.Processed) e.1 '\\\"' e.2>;
+  , <NotIn s.1 '\\'> : True = <Quote (e.Processed) e.1 s.1 '\\\"' e.2>;
   (e.Processed) e.1 s.1'\'' e.2
- , <NotIn s.1 '\\'> : True = <Quote (e.Processed e.1 '\\\'') e.2>;
+ , <NotIn s.1 '\\'> : True = <Quote (e.Processed e.1 s.1 '\\\'') e.2>;
  ( ) /* EMPTY */ = /* EMPTY */;
  (e.Processed) e.z = '\''e.Processed e.z'\''; }
 
