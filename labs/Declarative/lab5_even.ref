@@ -1,0 +1,148 @@
+$ENTRY Go
+  {  = <Open 'r' 1 'current_syntax.txt'>
+	  <Open 'r' 4 'my_syntax.txt'>
+	  <Open 'r' 5 'grammar.txt'>
+	  <Open 'r' 2 'dummy_grammar.ref'>
+	  <Open 'w' 3 'parser.ref'>
+	  <Putout 0 'Warning! The transformer does not process assoc-ALT blocks and ignores blanks and eol symbols.'>
+	  <Reflexion 
+	    ((('INLINE_INPUT') <Quote () <Trim <ReadGrammar <Get 5>>>>)<Completion '_'<Metaterms>(<GSRecursion '_' 1 <Get 1>>)>
+                        <Completion '-'<Metaterms>(<GSRecursion '-' 4 <Get 4>>)>)<Get 2>>
+	                <Close 1><Close 2><Close 3><Close 4><Close 5>;
+  }
+
+/* Мы разрешаем страшное: переносить правила грамматики в произвольной позиции на новую строчку. */
+ReadGrammar {
+ e.x 0 = e.x;
+ e.x = e.x <ReadGrammar <Get 5>>; }
+
+/* Метаконстанты (параметры) входной грамматики. У выходной метаконстанты отличаются только разделителем. */
+Metaterms {
+ = ('START_ITER') ('END_ITER') ('START_NTERM') ('END_NTERM') ('END_ALT') ('START_ALT') ('SEP_ALT') ('SEP_RULE') 
+   ('START_CONST') ('END_CONST') ('START_RULE') ('END_RULE') ('L_PAREN') ('R_PAREN');
+}
+
+GSRecursion { 
+  s.Flag s.Stream e.X 0 = ;
+  s.Flag s.Stream e.X = <GetSyntax s.Flag s.Stream e.X><GSRecursion s.Flag s.Stream <Get s.Stream>>;}
+
+GetSyntax {
+  s.Flag s.Stream e.1 'BEGIN_'e.Token e.2'='e.3
+     , <Trim e.2> : /* EMPTY */  = (('START's.Flag e.Token) <Quote ()<Trim e.3>>);
+  s.Flag s.Stream e.1 'SEP_A'e.2'='e.3 = (('SEP's.Flag'ALT') <Quote ()<Trim e.3>>);
+  s.Flag s.Stream e.1 'SEP_R'e.2'='e.3 = (('SEP's.Flag'RULE') <Quote ()<Trim e.3>>);
+  s.Flag s.Stream e.1 'LPAREN'e.2'='e.3 = (('L's.Flag'PAREN') <Quote ()<Trim e.3>>);
+  s.Flag s.Stream e.1 'RPAREN'e.2'='e.3 = (('R's.Flag'PAREN') <Quote ()<Trim e.3>>);
+  s.Flag s.Stream e.1 e.PrefToken'_'e.SuffToken e.2'='e.3
+     , <Trim e.1 e.2> : /* EMPTY */  = ((e.PrefToken s.Flag e.SuffToken) <Quote ()<Trim e.3>>);
+  s.Flag s.Stream e.1 'CNAME'e.2'='e.3 = (('C's.Flag'NAME') <Trim e.3>);
+  s.Flag s.Stream e.1 'NNAME'e.2'='e.3 = (('N's.Flag'NAME') <Trim e.3>);
+}
+
+Completion {
+ s.Flag e.x (e.A'_'e.AA) e.xx (((e.A s.Flag e.AA) e.Exp) e.Rest)
+      = ((e.A s.Flag e.AA) e.Exp) <Completion s.Flag e.x e.xx (e.Rest)>;
+ s.Flag ('END_ITER') e.Y (e.Z) = (('END's.Flag'ITER') '\'*\'') <Completion s.Flag e.Y (e.Z)>;
+ s.Flag ('SEP_ALT') e.Y (e.Z) = (('SEP's.Flag'ALT') '\'|\'') <Completion s.Flag e.Y (e.Z)>;
+ s.Flag ('SEP_RULE') e.Y (e.Z) = (('SEP's.Flag'RULE') '\'=\'') <Completion s.Flag e.Y (e.Z)>;
+ s.Flag ('L_PAREN') e.Y (e.Z) = (('L's.Flag'PAREN') '\'(\'') <Completion s.Flag e.Y (e.Z)>;
+ s.Flag ('R_PAREN') e.Y (e.Z) = (('R's.Flag'PAREN') '\')\'') <Completion s.Flag e.Y (e.Z)>;
+ s.Flag (e.W'_'e.WW) e.Y (e.Z) = ((e.W s.Flag e.WW)) <Completion s.Flag e.Y (e.Z)>;
+ s.Flag (e.Z) = e.Z; }
+
+Trim {
+ ' 'e.1 = <Trim e.1>;
+ e.1' ' = <Trim e.1>;
+ e.1 ' ' e.2 = <Trim e.1 e.2>; 
+ e.Z = e.Z; }
+
+Quote {
+  ( )'\"' e.2
+   = <Quote ('\\\"') e.2>;
+  ( )'\'' e.2
+   = <Quote ('\\\'') e.2>;
+  (e.Processed) e.1 s.1'\"' e.2
+  , <NotIn s.1 '\\'> : True = <Quote (e.Processed) e.1 '\\\"' e.2>;
+  (e.Processed) e.1 s.1'\'' e.2
+ , <NotIn s.1 '\\'> : True = <Quote (e.Processed e.1 '\\\'') e.2>;
+ ( ) /* EMPTY */ = /* EMPTY */;
+ (e.Processed) e.z = '\''e.Processed e.z'\''; }
+
+NotIn {
+ s.X s.X = False;
+ s.X s.Y = True; }
+
+GenerateFstName {
+ '_' = 'Parse';
+ '-' = 'Show'; }
+
+GenerateSndName {
+ 'C' = 'Const';
+ 'N' = 'NonTerminal'; }
+
+ExtractRegexes {
+  (e.Processed) e.W1 ((s.Sym s.Flag'NAME')e.Regex) e.W2
+  , <GenerateFstName s.Flag><GenerateSndName s.Sym> : e.Name
+   = <ExtractRegexes (e.Processed (<RegexGenerator ( )( )( )('I')(e.Name) e.Regex>)) e.W2>;
+  ((e.R1)(e.R2)(e.R3)(e.R4))
+  , e.R1 e.R2 e.R3 e.R4 : 
+     {  e.XX 'Error' e.XXX = ERROR 'Regex parse error.';
+        e.Z = NORMAL e.R1 () e.R2 () e.R3 () e.R4;
+     };
+  e.Otherwise = ERROR 'Constant or nonterminal syntax is not defined.';  
+}
+
+/* Специализация грамматики метаконстант. */
+Reflexion {
+  (e.Syntax) e.1 0
+  , <ExtractRegexes ( ) e.Syntax> :
+     { ERROR e.Message = <Putout 0 e.Message>;
+       NORMAL e.Functions = <Putout 3 e.1><PutStr e.Functions>; 
+     };
+  (e.Synt1 ((e.Key) e.Value) e.Synt2) e.1 e.Key e.2
+	   = <Reflexion (e.Synt1 ((e.Key) e.Value) e.Synt2) e.1 e.Value e.2>;
+  (e.Syntax) e.Rest = <Putout 3 e.Rest><Reflexion (e.Syntax)<Get 2>>;
+}
+
+SubPattern {
+  '*' (e.Num) = 'e.'e.Num;
+  '+' (e.Num) = 's.'e.Num' e.'e.Num; }
+
+/* Порождение функций парсинга регулярок. */
+RegexGenerator {
+  (e.Call)(e.Conditions)(e.Functions) (e.Num) (e.Sort) '('s.Letter')'s.Iter e.Rest
+  , <NotIn s.Letter '.'> : True
+  , e.Sort'_'e.Num : e.FName
+  , '<'e.FName' e.Word>' : e.RecCall
+  , (e.FName' {') : t.DefStart
+  , '\''s.Letter'\' e.Word = 'e.RecCall'; ' : e.Recursion
+  , <SubPattern s.Iter (e.Num)> : e.Vars
+    = <RegexGenerator 
+            (e.Call' 'e.Vars)(e.Conditions', <'e.FName' 'e.Vars'> : True')
+	    (e.Functions () t.DefStart ('/* EMPTY */ = True;')(e.Recursion)('e.Otherwise = False; }'))
+	    (e.Num'I') (e.Sort) e.Rest>;
+  (e.Call)(e.Conditions)(e.Functions) (e.Num) (e.Sort) '('e.Pattern')'s.Flag e.Rest
+  , <SubPattern s.Flag (e.Num)> : e.VarStr
+  , <LetterAnalyser e.Pattern (e.VarStr)> : e.NewCond
+     = <RegexGenerator (e.Call' 'e.VarStr)(e.Conditions e.NewCond)(e.Functions)(e.Num'I') (e.Sort) e.Rest>;
+  (e.Call)(e.Conditions)(e.Functions) (e.Num) (e.Sort) '['e.Char']' e.Rest
+  , <LetterAnalyser '['e.Char']'('s.'e.Num)> : e.Pattern
+      = <RegexGenerator (e.Call' s.'e.Num)(e.Conditions e.Pattern)(e.Functions)(e.Num'I')(e.Sort) e.Rest>;
+  (e.Call)(e.Conditions)(e.Functions) (e.Num) (e.Sort) '.' e.Rest
+    = <RegexGenerator (e.Call 's.'e.Num)(e.Conditions)(e.Functions)(e.Num'I') (e.Sort) e.Rest>;
+  (e.Call)(e.Conditions)(e.Functions) (e.Num) (e.Sort) s.Char e.Rest
+    = <RegexGenerator (e.Call '\''s.Char'\'')(e.Conditions)(e.Functions)(e.Num) (e.Sort) e.Rest>;
+  (e.Call)(e.Conditions)(e.Functions) (e.Num) (e.Sort)
+    = (e.Sort' {')('  'e.Call)('  'e.Conditions' = True;')('  e.Otherwise = False; }') e.Functions;
+}
+
+PutStr {
+  = ;
+  (e.Line) e.Rest = <Putout 3 e.Line><PutStr e.Rest>; }
+
+LetterAnalyser {
+  '.'(e.Vars) = ', <NoBlank 'e.Vars'> : True';
+  '[0-9]'(e.Vars) = ', <StringSubset (\'0123456789\') 'e.Vars'> : True';
+  '[a-z]'(e.Vars) = ', <StringSubset (\'qwertyuiopasdfghjklzxcvbnm\') 'e.Vars'> : True';
+  '[A-Z]'(e.Vars) = ', <StringSubset (\'QWERTYUIOPASDFGHJKLZXCVBNM\') 'e.Vars'> : True';
+}

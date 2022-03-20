@@ -1,7 +1,5 @@
 $ENTRY Go
-  { 
-	= <Open 'r' 1 'test_Err1.txt'><RegularityCheckerAux () <ReadGrammar <Trim <Get 1>>> ()><Close 1>;
-  }
+  {  = <Open 'r' 1 'test_Err1.txt'><RegularityCheckerAux () <ReadGrammar <Trim <Get 1>>> ()><Close 1>; }
 
 RegularityCheckerAux {
   e.x (e.v) s.er e.err (e.w) e.y = <Putout 0 s.er e.err><RegularityCheckerAux ()e.y('Error!') >;
@@ -78,8 +76,7 @@ Productive {
   (e.NT) e.R1 (s.NT (e.RHS)) e.R2
   , <Element s.NT e.NT> : False
     = <Productive (e.NT s.NT) e.R2>;
-  (e.NT) e.R = e.NT;
-}
+  (e.NT) e.R = e.NT; }
 
 MapPumping {
   (e.Rules) = ;
@@ -103,8 +100,7 @@ Derives {
  , <Smpl e.Str (e.RHS e.Str2)> : e.NewPair
  , <Element (e.NewPair) e.D1 (e.Str (s.N e.Str2)) e.D2> : False
    = <Derives (e.Rules) e.D1 (e.Str (s.N e.Str2)) e.D2 (e.NewPair)>;
- (e.Rules) e.Z = False;
-}
+ (e.Rules) e.Z = False; }
 
 TurchinPair {
   (s.x e.y)(s.x e.yy) = <TurchinPair (e.y)(e.yy)>;
@@ -117,14 +113,12 @@ TurchinPair {
   ggo ((s.x e.T) e.A)((s.x e.TT) e.B)
      = <TurchinPair ggo (e.A)(e.B)>;
   ggo ()(e.w) = True;
-  e.Z = False;
-}
+  e.Z = False; }
 
 CoincideModuloTime {
   ((t.n e.x) e.r1)((t.n e.xx) e.r2) = <CoincideModuloTime (e.r1)(e.r2)>;
   ()() = True;
-  t.x t.xx = False;
-}
+  t.x t.xx = False; }
 
 TurchinFree {
   (e.Str1 e.Str2 e.XX) e.P1 (e.Str1 e.X) e.P2
@@ -133,13 +127,11 @@ TurchinFree {
   , e.Pumps : e.P1 t.Pump2 e.P2
   , <TurchinPair t.Pump2 t.Pump> : True
    = False;
-   e.Z = True;
-}
+   e.Z = True; }
 
 InitPump {
  s.T (e.R1 (s.T (e.RHS)) e.R2) = (<AssignNewPair ('I')()e.RHS>) <InitPump s.T (e.R2)>;
- e.Z = ;
-}
+ e.Z = ; }
 
 FilterPumps {
   (e.Terminals) s.T e.X (e.Str) e.XX
@@ -184,8 +176,7 @@ AssignNewPair {
 DeleteTime {
   e.x (e.y (s.N e.Time) e.yy) e.xx
     = e.x <DeleteTime (e.y s.N e.yy) e.xx>;
-  e.Z = e.Z;
-}
+  e.Z = e.Z; }
 
 /*******************************************************************************/
 /*                                  AUXILIARIES                                */     
@@ -194,19 +185,16 @@ DeleteTime {
 TerminalString {
  e.x s.y e.xx
  , <NonTerminals> : e.y s.y e.yy = False;
- e.z = True; 
-}
+ e.z = True; }
 
 Smpl {
   s.x e.y (s.x e.z) = <Smpl e.y (e.z)>;
   e.y s.x (e.z s.x) = <Smpl e.y (e.z)>;
-  e.y (e.z) = e.y (e.z);
-}
+  e.y (e.z) = e.y (e.z); }
 
 String {
   e.x (e.y) e.z = False;
-  e.Z = True;
-}
+  e.Z = True; }
 
 PrintList {
  = 'none.';
@@ -218,32 +206,26 @@ PrintList {
 
 Element {
  t.x e.y1 t.x e.y2 = True;
- e.Z = False;
-}
+ e.Z = False; }
 
 Intersection {
  (e.x s.1 e.xx) e.y s.1 e.yy = True;
- (e.x) e.y = False;
-} 
+ (e.x) e.y = False; } 
 
 Filter {
  (e.x s.N e.xx)(e.y s.N e.yy) = <Filter (e.x s.N e.xx)(e.y e.yy)>;
- (e.w)(e.u) = e.u;
-}
+ (e.w)(e.u) = e.u; }
 
 Lesser {
   ()e.W = True;
   (s.k e.X) s.kk e.Y = <Lesser (e.X) e.Y>;
-  (e.X) e.Y = False;
-}
+  (e.X) e.Y = False; }
 
 NonTerminals {
-  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-}
+  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; }
 
 Terminals {
- = 'abcdefghijklmopqrstuvwxyz';
-}
+ = 'abcdefghijklmopqrstuvwxyz'; }
 
 /*********************************************************************************/
 /*                                 PARSER                                        */
@@ -256,8 +238,7 @@ SyntOK {
   (e.Alphabet) s.x e.y
   , e.Alphabet : e.A1 s.x e.A2
    = <SyntOK (e.Alphabet) e.y>;
-  (e.Alphabet) e.Z = False;
-}
+  (e.Alphabet) e.Z = False; }
 
 ReadGrammar {
   e.N'->'e.RHS 0
@@ -287,6 +268,5 @@ ReadGrammar {
 
 Trim {
   e.x' 'e.xx = e.x<Trim e.xx>;
-  e.Z = e.Z;
-}
+  e.Z = e.Z; }
 

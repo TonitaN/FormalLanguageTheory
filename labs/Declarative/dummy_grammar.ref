@@ -1,0 +1,154 @@
+/* INLINE_INPUT --- плейсхолдер (дыра) для размещения входной грамматики. */
+$ENTRY Go
+  { 	= <Open 'w' 1 'result'><PrintSyntax <MetaGrammar ( ) INLINE_INPUT>><Close 1>; }
+
+/* Экспоненциальный переборный парсер сверху вниз, параметризованный входными константами. */
+MetaGrammar {
+  (e.Processed) START_RULE START_NTERM e.Name END_NTERM SEP_RULE e.Expr0 END_RULE e.Rest
+    , <Matches e.Rest> : True
+    , START_NTERM e.Name END_NTERM SEP_RULE e.Expr0 : e.Line  
+    , <NotIn (e.Processed) (Rule (e.Line))> : True
+    , <ParseNonTerminal e.Name> : True
+    , <MetaExpr ( )( ) e.Expr0> : 
+     {t.Smth e.List
+     , <IsEMPT e.Rest><MetaGrammar ( ) e.Rest> : t.Nempt e.Result
+         = (WITH (<ComboRules (Nterm e.Name) t.Smth e.List>) t.Nempt e.Result) 
+	    <MetaGrammar (e.Processed (Rule (e.Line))) START_RULE e.Line END_RULE e.Rest>;
+       e.OtherWise = <MetaGrammar (e.Processed (Rule (e.Line))) START_RULE e.Line END_RULE e.Rest>;
+       };
+  (e.Processed) e.NoAlt = ; }
+
+/* Без этих двух lookahead-функций можно обойтись, но они сильно сокращают время перебора почти для всех пользовательских грамматик 
+   (кроме самых дурацких, в которых образцы ниже вырождаются в тривиальные). */
+Matches {
+   = True;
+ START_RULE START_NTERM e.Name END_NTERM SEP_RULE e.Expr0 END_RULE e.Rest, <ParseNonTerminal e.Name> : True = True;
+ e.Z = False; }
+
+MatchesConc {
+ START_ALT e.E1 SEP_ALT e.E2 END_ALT = True;
+ START_ITER e.E END_ITER = True;
+ L_PAREN e.E R_PAREN = True;
+ START_NTERM e.Name END_NTERM, <ParseNonTerminal e.Name> : True = True;
+ START_CONST e.Name END_CONST, <ParseConst e.Name> : True = True;
+ e.Z = False; }
+
+IsEMPT {
+ = FINISH;
+ e.X = ; }
+
+ComboRules {
+  (Nterm e.Name) t.Expr1 t.Expr2 e.Rest = (RULE (Nterm e.Name) EQUALS t.Expr1) OR <ComboRules (Nterm e.Name) t.Expr2 e.Rest>;
+  (Nterm e.Name) t.Expr = (RULE (Nterm e.Name) EQUALS t.Expr);
+}
+
+/* Вспомогательная функция, введённая для экономии времени перебора по различным альтернативам-разбиениям. */
+MetaExprAux {
+    Arity2 s.Sort ((t.1 e.E01)(e.Ex2))(e.Processed)(e.Tried) e.Expr
+    , <MetaExpr ( )( )e.Ex2> : 
+    { t.2 e.E02
+      , <Combine s.Sort (t.1 e.E01) t.2 e.E02> : e.Result
+         = <MetaExpr (e.Processed e.Result)(e.Tried) e.Expr>;
+      e.Z = <MetaExpr (e.Processed)(e.Tried)e.Expr>;
+    };
+    Arity1 s.Sort (t.1 e.E02)(e.Processed)(e.Tried) e.Expr
+       = <MetaExpr (e.Processed <Zip Arg1 s.Sort t.1 e.E02>)(e.Tried) e.Expr>;  
+    s.Arity s.Class (e.UnSuccParse)(e.Processed)(e.Tried) e.Expr
+       = <MetaExpr (e.Processed)(e.Tried)e.Expr>;
+}
+
+/* Главная функция параметризованного парсинга, моделирующая примитивный вариант GLR-алгоритма. */
+MetaExpr {
+  (e.Processed)(e.Tried) START_ALT e.E2 SEP_ALT e.E4 END_ALT
+     , (e.E2) e.E4 : (s.1 e.Expr1) s.2 e.Expr2
+     , START_ALT e.E2 SEP_ALT e.E4 END_ALT : e.Expr 
+     , <NotIn (e.Tried) (NoAlt (e.Expr))> : True
+     , <NotIn (e.Tried) (Alt ((e.E2)(e.E4)))> : True
+             = <MetaExprAux Arity2 Alt ((<MetaExpr ( )((NoAlt (e.E2)))e.E2>) (e.E4))
+                                 (e.Processed) (e.Tried (Alt ((e.E2)(e.E4)))) e.Expr>;
+  (e.Processed)(e.Tried) s.Start e.Expr
+     , s.Start e.Expr : s.11 e.E1 s.12 e.E2
+     , <MatchesConc s.11 e.E1> : True
+     , <NotIn (e.Tried) (Conc ((s.11 e.E1)(s.12 e.E2)))> : True
+     , <NotIn (e.Tried) (NoConc (s.Start e.Expr))> : True
+              = <MetaExprAux 
+                       Arity2 Conc  ((<MetaExpr ( )((NoConc (s.11 e.E1))(NoAlt (s.11 e.E1)))s.11 e.E1>)(s.12 e.E2)) 
+                          (e.Processed)(e.Tried (Conc ((s.11 e.E1)(s.12 e.E2)))) s.Start e.Expr>;
+  (e.Processed)(e.Tried) START_ITER s.1 e.Expr1 END_ITER
+     , START_ITER s.1 e.Expr1 END_ITER : e.Expr  
+     , <NotIn (e.Tried) (Iter (e.Expr))> : True
+              = <MetaExprAux Arity1 Iter (<MetaExpr ( )( )s.1 e.Expr1>)(e.Processed)(e.Tried (Iter (e.Expr)))e.Expr>;
+  (e.Processed)(e.Tried) L_PAREN s.1 e.Expr1 R_PAREN
+     , L_PAREN s.1 e.Expr1 R_PAREN : e.Expr  
+     , <NotIn (e.Tried) (Parens (e.Expr))> : True
+              = <MetaExprAux Arity1 Parens (<MetaExpr ( )( )s.1 e.Expr1>)(e.Processed)(e.Tried (Parens (e.Expr)))e.Expr>;
+  (e.Processed)(e.Tried) START_NTERM s.Start e.E2 END_NTERM
+     , <ParseNonTerminal s.Start e.E2> : True
+        = e.Processed (Nterm s.Start e.E2);	
+  (e.Processed)(e.Tried) START_CONST s.Start e.E2 END_CONST
+     , <ParseConst s.Start e.E2> : True
+        = e.Processed (Const s.Start e.E2);	
+  (e.Processed)(e.Tried) e.NoOtherParse = e.Processed;
+}
+
+PrintSyntax {
+   = ;
+  (WITH e.Rules FINISH) e.OtherParses 
+   = <PrintRuleParse e.Rules><Putout 1 'END of PARSE'><PrintSyntax e.OtherParses>;
+  (WITH (e.Rules)(e.Parse)) e.OtherParses 
+   = <PrintRuleParse (e.Rules)><PrintSyntax (e.Parse)><PrintSyntax e.OtherParses>;
+}
+
+/* Параметризованная функция печати правила грамматики в новом синтаксисе. */
+PrintRuleParse {
+  (e.B (RULE (Nterm e.Name) EQUALS (e.Expr)) OR e.Rest)
+   = <Putout 1 'Rule variant:'><Putout 1 START-RULE START-NTERM e.Name END-NTERM SEP-RULE <Show (e.Expr)> END-RULE>
+     <PrintRuleParse (e.Rest OR)>;
+  ((RULE (Nterm e.Name) EQUALS (e.Expr)))
+   = <Putout 1 START-RULE START-NTERM e.Name END-NTERM SEP-RULE <Show (e.Expr)> END-RULE>;
+  e.Z = ; }
+
+/* Параметризованная функция печати правой части правила грамматики в новом синтаксисе. */
+Show {
+   = ;
+  (Conc t.Term e.Rest) = <Show t.Term><Show e.Rest>;
+  (Iter e.Expr) e.Rest = START-ITER <Show e.Expr> END-ITER <Show e.Rest>;
+  (Alt t.Expr1 t.Expr2 e.Rest1) e.Rest2 = START-ALT <Show t.Expr1> SEP-ALT <Show (NextAlt t.Expr2 e.Rest1)> END-ALT <Show e.Rest2>;
+  (NextAlt t.Expr1 t.Expr2 e.Rest) = <Show t.Expr1> SEP-ALT <Show (NextAlt t.Expr2 e.Rest)>;
+  (NextAlt t.Expr1) = <Show t.Expr1>;
+  (Const e.Expr) e.Rest
+  , <ShowConst e.Expr> :
+    {True = START-CONST e.Expr END-CONST <Show e.Rest>;
+     False = START-CONST '!!NON-MATCHING!!'e.Expr END-CONST <Show e.Rest><Putout 0 'The constant 'e.Expr' does not match the new syntax.'>;
+    };
+  (Nterm e.Expr) e.Rest
+  , <ShowNonTerminal e.Expr> :
+    {True = START-NTERM e.Expr END-NTERM <Show e.Rest>;
+     False = START-NTERM '!!NON-MATCHING!!'e.Expr END-NTERM <Show e.Rest><Putout 0 'The non-terminal 'e.Expr' does not match the new syntax.'>;
+    };
+  (Parens e.Expr) e.Rest = L-PAREN <Show e.Expr> R-PAREN <Show e.Rest>;
+}
+
+/*********************************ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ*********************************/
+NoBlank {
+ e.Z1' 'e.Z2 = False;
+ e.Z = True; }
+
+StringSubset {
+ (e.Set) = True;
+ (e.Set) s.x e.X, e.Set : e.y1 s.x e.y2 = <StringSubset (e.Set) e.X>;
+ e.Z = False; }
+
+NotIn {
+  (e.1 (s.Class e.Parse t.Term) e.2) (s.Class t.Term) = False;
+  e.Z = True; }
+
+Combine {
+  s.Sort (t.1 e.01) e.2 = <Zip Arg2 s.Sort t.1 e.2> <Combine s.Sort (e.01) e.2>;
+  s.Sort ( ) e.2 = ; }
+
+Zip {
+  Arg2 s.Sort t.1 t.2 e.3 = (s.Sort t.1 t.2) <Zip Arg2 s.Sort t.1 e.3>;
+  Arg2 s.Sort t.1 = ;
+  Arg1 s.Sort t.1 e.2 = (s.Sort t.1) <Zip Arg1 s.Sort e.2>;
+  Arg1 s.Sort = ; }
