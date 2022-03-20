@@ -1,8 +1,6 @@
-/* INLINE_INPUT --- плейсхолдер (дыра) для размещения входной грамматики. */
 $ENTRY Go
   { 	= <Open 'w' 1 'result'><PrintSyntax <MetaGrammar ( ) INLINE_INPUT>><Close 1>; }
 
-/* Экспоненциальный переборный парсер сверху вниз, параметризованный входными константами. */
 MetaGrammar {
   (e.Processed) START_RULE START_NTERM e.Name END_NTERM SEP_RULE e.Expr0 END_RULE e.Rest
     , <Matches e.Rest> : True
@@ -18,8 +16,6 @@ MetaGrammar {
        };
   (e.Processed) e.NoAlt = ; }
 
-/* Без этих двух lookahead-функций можно обойтись, но они сильно сокращают время перебора почти для всех пользовательских грамматик 
-   (кроме самых дурацких, в которых образцы ниже вырождаются в тривиальные). */
 Matches {
    = True;
  START_RULE START_NTERM e.Name END_NTERM SEP_RULE e.Expr0 END_RULE e.Rest, <ParseNonTerminal e.Name> : True = True;
@@ -42,7 +38,6 @@ ComboRules {
   (Nterm e.Name) t.Expr = (RULE (Nterm e.Name) EQUALS t.Expr);
 }
 
-/* Вспомогательная функция, введённая для экономии времени перебора по различным альтернативам-разбиениям. */
 MetaExprAux {
     Arity2 s.Sort ((t.1 e.E01)(e.Ex2))(e.Processed)(e.Tried) e.Expr
     , <MetaExpr ( )( )e.Ex2> : 
@@ -57,7 +52,6 @@ MetaExprAux {
        = <MetaExpr (e.Processed)(e.Tried)e.Expr>;
 }
 
-/* Главная функция параметризованного парсинга, моделирующая примитивный вариант GLR-алгоритма. */
 MetaExpr {
   (e.Processed)(e.Tried) START_ALT e.E2 SEP_ALT e.E4 END_ALT
      , (e.E2) e.E4 : (s.1 e.Expr1) s.2 e.Expr2
@@ -99,7 +93,6 @@ PrintSyntax {
    = <PrintRuleParse (e.Rules)><PrintSyntax (e.Parse)><PrintSyntax e.OtherParses>;
 }
 
-/* Параметризованная функция печати правила грамматики в новом синтаксисе. */
 PrintRuleParse {
   (e.B (RULE (Nterm e.Name) EQUALS (e.Expr)) OR e.Rest)
    = <Putout 1 'Rule variant:'><Putout 1 START-RULE START-NTERM e.Name END-NTERM SEP-RULE <Show (e.Expr)> END-RULE>
@@ -108,7 +101,6 @@ PrintRuleParse {
    = <Putout 1 START-RULE START-NTERM e.Name END-NTERM SEP-RULE <Show (e.Expr)> END-RULE>;
   e.Z = ; }
 
-/* Параметризованная функция печати правой части правила грамматики в новом синтаксисе. */
 Show {
    = ;
   (Conc t.Term e.Rest) = <Show t.Term><Show e.Rest>;
@@ -129,7 +121,6 @@ Show {
   (Parens e.Expr) e.Rest = L-PAREN <Show e.Expr> R-PAREN <Show e.Rest>;
 }
 
-/*********************************ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ*********************************/
 NoBlank {
  e.Z1' 'e.Z2 = False;
  e.Z = True; }
