@@ -140,6 +140,5 @@ Combine {
 
 Zip {
   Arg2 s.Sort t.1 t.2 e.3 = (s.Sort t.1 t.2) <Zip Arg2 s.Sort t.1 e.3>;
-  Arg2 s.Sort t.1 = ;
   Arg1 s.Sort t.1 e.2 = (s.Sort t.1) <Zip Arg1 s.Sort e.2>;
-  Arg1 s.Sort = ; }
+  s.Arg s.Sort e.Otherwise = ; }
