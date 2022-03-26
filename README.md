@@ -33,3 +33,4 @@
 - [Решение регулярных уравнений. Реализация Егора Смирнова (ИУ9)](https://smegdm.github.io/tfl/lab2/regex_system_solver/index.html)
 - [Минимизатор конечных автоматов онлайн](https://aswaddev.github.io/dfa-minimizer/)
 - [Анализатор КС-грамматик онлайн (3 в 1: LL(1), LR(0-1), неоднозначность)](http://mdaines.github.io/grammophone/#/)
+- [Интерактивный тестировщик пользовательской КС-грамматики](https://web.stanford.edu/class/archive/cs/cs103/cs103.1156/tools/cfg/)
