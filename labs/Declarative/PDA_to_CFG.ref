@@ -1,0 +1,243 @@
+$ENTRY Go
+  {  , <PDA> :
+     { e.x1 (Error e.x2) = <Putout 0 e.x2>;
+       (Start (e.1) e.2) e.x
+       , <EndMarkRules ( )( )( )e.x> : (e.reach)(e.gen)(e.rest) = <Open 'w' 2 'CFG_result'>
+	       <Format <RenameRules 1 (((Start) ('S')))(<InitNames 0>)
+	        <Reachable ( )((Start))( )( )
+		  <GenerateStarting ()()((e.1)e.2)e.gen <GenerateCFG (e.reach)( )( )( )e.rest>>>>>
+	       <Close 2>; 
+     };
+  }
+
+Format {
+  (t.term to e.rhs) e.rest = <Putout 2 <Show t.term>' -> '<Show e.rhs>><Format e.rest>;
+   = ;
+}
+
+Show {
+ (e.x) = e.x;
+ s.x = s.x;
+ s.x t.z e.y = s.x' '<Show t.z e.y>;
+ (e.x) e.y = e.x' '<Show e.y>;
+  = ;
+}
+
+UpdSet {
+  (e.Set) s.Sym e.x = <UpdSet (e.Set) e.x>;
+  (e.Set t.1 e.Set2) e.x t.1 e.xx = e.x <UpdSet (e.Set t.1 e.Set2) e.xx>;
+  (e.Set) e.z = e.z;
+}
+
+Reachable {
+  (e.Curr)(e.New)(e.Old)(e.Processed)(t.Term to e.rhs)e.Rules
+  , e.New :
+  { e.N1 t.Term e.N2
+    = (t.Term to e.rhs) <Reachable (e.Curr <UpdSet (e.New e.Old e.Curr)e.rhs>)(e.New)(e.Old)(e.Processed)e.Rules>;
+    e.Z = <Reachable (e.Curr)(e.New)(e.Old)(e.Processed (t.Term to e.rhs)) e.Rules>;
+  };
+  (t.Name e.Curr)(e.New)(e.Old)(e.Processed)
+    = <Reachable ()(t.Name e.Curr)(e.Old e.New)()e.Processed>;
+  ( )(e.New)(e.Old)(e.Processed)e.Rules = ;
+}
+
+InitNames {
+  0 = <ConcatAll (<Ntermset>)>;
+  s.Number = <ConcatAll (<Ntermset>)<Symb s.Number>>;
+}
+
+RenameRules {
+  s.Number (e.Pairs)(e.Names)(t.Name to e.rhs)e.rules
+  , <RenameTerms s.Number (e.Pairs)(e.Names)t.Name> : t.NewName s.NewNumber (e.NewPairs)(e.NewNames)
+  , <RenameTerms s.NewNumber (e.NewPairs)(e.NewNames) e.rhs> : e.newrhs s.NNewNumber (e.NNewPairs)(e.NNewNames)
+     = (t.NewName to e.newrhs)<RenameRules s.NNewNumber (e.NNewPairs)(e.NNewNames) e.rules>;
+  s.Number (e.Pairs)(e.Names) = ;
+}
+
+RenameTerms {
+ s.Number (e.Pairs)(e.Names)s.Sym e.rest = s.Sym <RenameTerms s.Number (e.Pairs)(e.Names) e.rest>;
+ s.Number (e.Pairs)(e.Names)t.Name e.rest 
+ , e.Pairs :
+ { e.X1 (t.Name t.NewName) e.X2 = t.NewName <RenameTerms s.Number (e.Pairs)(e.Names)e.rest>; 
+   e.Z, e.Names : 
+   { t.Last = t.Last <RenameTerms <Add s.Number 1>(e.Pairs (t.Name t.Last))(<InitNames s.Number>)e.rest>;
+     t.Car e.Cdr = t.Car <RenameTerms s.Number (e.Pairs (t.Name t.Car))(e.Cdr)e.rest>;
+   };
+ };
+ s.Number (e.Pairs)(e.Names)/* EMPTY */ = s.Number (e.Pairs)(e.Names);
+}
+
+ConcatAll {
+ (s.Sym e.Rest)e.String = (s.Sym e.String)<ConcatAll (e.Rest)e.String>;
+ ()e.String = ; 
+}
+
+GenerateStarting {
+ (e.Processed)(e.Done)((e.q1)s.Z)e.rr (((e.q1)(s.Z)t.every) to e.rhs) e.rrr
+ , e.Processed :
+ {e.P1 ((Start) to ((e.q1)(s.Z)t.every)) e.P2
+    = <GenerateStarting 
+   (e.Processed)
+   (e.Done e.rr (((e.q1)(s.Z)t.every) to e.rhs))((e.q1)s.Z)e.rrr>;
+  e.Z = <GenerateStarting 
+   (e.Processed ((Start) to ((e.q1)(s.Z)t.every)))
+   (e.Done e.rr (((e.q1)(s.Z)t.every) to e.rhs))((e.q1)s.Z)e.rrr>;
+   };
+  (e.Processed)(e.Done)(e.init)e.rules = e.Processed e.Done e.rules;
+}
+
+EndMarkRules {
+ (e.reach)(e.gen)(e.proc) e.x (Rule (e.state)(s.nterm) by e.sym to (e.state2)(/* EMPTY */)) e.xx
+   = <EndMarkRules (e.reach ((e.state)(s.nterm)(e.state2)))(e.gen (((e.state)(s.nterm)(e.state2)) to e.sym))
+     (e.proc e.x) e.xx>;
+ (e.reach)(e.gen)(e.proc) e.z = (e.reach)(e.gen)(e.proc e.z);  
+}
+
+GenerateCFG {
+  (e.new)(e.old)( )(e.processed) = ;
+  (e.new)(e.old)(e.these)(e.processed) (Rule (e.s1)(s.n1) by e.t to (e.s2)(e.n2)) e.rest
+  , <GenerateRHS (e.s2)()(e.n2)(e.new)(e.old)> 
+    : {
+        /* EMPTY */ = 
+	   <GenerateCFG (e.new)(e.old)(e.these)(e.processed (Rule (e.s1)(s.n1) by e.t to (e.s2)(e.n2))) e.rest>;
+        e.List = <GenerateCurrRules (e.s1)(s.n1)(e.t)e.List>
+	         <GenerateCFG 
+		    (e.new)(e.old)(e.these <Update (e.new e.old e.these)( )(e.s1)(s.n1) e.List>)
+		    (e.processed (Rule (e.s1)(s.n1) by e.t to (e.s2)(e.n2))) e.rest>;
+   };
+  (e.new)(e.old)(e.these)(e.processed) = <GenerateCFG (e.these)(e.old e.new)( )( )e.processed>;
+}
+
+GenerateCurrRules {
+   (e.s2)(s.n1)(e.t)/*EMPTY */ = /*EMPTY */;
+   (e.s2)(s.n1)(e.t)(e.rhs (t.staten t.ntermn t.statelast)) e.rest = (((e.s2)(s.n1)t.statelast) to e.t e.rhs (t.staten t.ntermn t.statelast))
+           <GenerateCurrRules (e.s2)(s.n1)(e.t)e.rest>;   
+}
+
+Update {
+  (e.List)(e.Found)(e.s1)(s.n1) (e.rule (t.staten t.ntermn t.statelast)) e.rest
+   , e.List e.Found : {
+     e.x ((e.s1)(s.n1) t.statelast) e.xx = <Update (e.List)(e.Found)(e.s1)(s.n1) e.rest>;
+     e.z = <Update (e.List)(e.Found ((e.s1)(s.n1) t.statelast))(e.s1)(s.n1) e.rest>;
+   };
+   (e.List)(e.Found)(e.s1)(s.n1) = e.Found;
+}
+
+GenerateRHS {
+ (e.state)(e.processed)(s.nterm e.rest)(e.new)(e.old)
+  = <Permutations <FilterFirst ()(e.state) <GenerateAll (e.state)(e.old) e.processed>
+                  <GenerateAll(e.state)(e.new) s.nterm>
+		  <GenerateAll (e.state)(e.old e.new) e.rest>>>
+    <GenerateRHS (e.state)(e.processed s.nterm)(e.rest)(e.new)(e.old)>;
+  (e.state)(e.processed)()(e.new)(e.old) = /* EMPTY */;
+}
+
+FilterFirst {
+  (e.processed)(e.state)(e.x ((e.state)e.rhs) e.xx)e.rest
+    = <FilterFirst (e.processed ((e.state) e.rhs))(e.state)(e.xx)e.rest>;
+  (e.processed)(e.state)(e.zzz)e.rest = (e.processed)e.rest;
+}
+
+GenerateAll {
+ (e.state)(e.set)s.nterm e.rest
+    = (<GenerateVariants ( )(e.set)(e.state)(s.nterm)>)<GenerateAll (e.state)(e.set)e.rest>;
+ (e.state)(e.set) = ;
+
+}
+
+GenerateVariants {
+ (e.generated)(e.x (t.1 t.2 t.3) e.xx) t.x t.2
+ , e.generated :
+ {e.v1 (t.1 t.2 t.3) e.v2 = <GenerateVariants (e.generated)(e.xx) t.x t.2>;
+  e.z = <GenerateVariants (e.generated (t.1 t.2 t.3))(e.xx) t.x t.2>;
+  };
+ (e.generated)(e.z) t.1 t.2 = e.generated;
+}
+
+Permutations {
+  e.X (/* EMPTY */) e.Y = /* EMPTY */;
+  ((t.1 t.n1 t.2) e.X1)(e.Y)e.Z
+  , e.Y : {
+           e.Y0 (t.2 t.n2 t.3) e.Y1 = <Append (t.1 t.n1 t.2)<Permutations ((t.2 t.n2 t.3))e.Z>>
+                                                        <Permutations ((t.1 t.n1 t.2))(e.Y1)e.Z><Permutations (e.X1)(e.Y)e.Z>;
+          e.W = <Permutations (e.X1)(e.Y)e.Z>;
+          };
+  (t.x e.LastNterm) = (t.x e.LastNterm);
+  () = ;
+  ()(e.Y)e.Z = ;
+}
+
+Append {
+ t.1 (t.2 e.rest) e.z = (t.1 t.2 e.rest)<Append t.1 e.z>;
+ t.1 = /* EMPTY */;
+}
+
+PDA {
+ = <Open 'r' 1 'PDA.txt'><ReadPDA Start <Trim <Get 1>>><Close 1>;
+}
+
+/*********************************************************************************/
+/*                                 PARSER                                        */
+/*********************************************************************************/
+
+ReadPDA {
+ Start '<q'e.1','s.2'>'
+ , <Checkset ('Number') e.1><Checkset ('Nterm') s.2> :
+ { e.x1'F'e.x2 = (Error 'Lexical error in the entry point.');
+   e.x = (Start (e.1) s.2) <ReadPDA Rules <Trim <Get 1>>>;
+ };
+ Start e.x = (Error 'Unparsable entry point 'e.x'.'); 
+ Rules e.x
+ , e.x : '<q's.1 e.1','e.2','s.3'>-><q's.11 e.11','e.4'>'e.end
+ , <Empty (e.2)('!!')> : e.22
+ , <Checkset ('Number') s.1 e.1 s.11 e.11><Either <Checkset ('Term') e.22>><Checkset ('Nterm') s.3 e.4> :
+ { e.x1 'F' e.x2 = (Error 'Lexical error in the rule 'e.x'.');
+   e.z = (Rule (s.1 e.1)(s.3) by e.22 to (s.11 e.11)(e.4))<NewIter (e.x)e.end>;
+ };
+ Rules 0 = ;
+ Rules /* EMPTY */ = <ReadPDA Rules <Trim <Get 1>>>;
+ Rules e.x = (Error 'Unparsable rule 'e.x'.');
+}
+
+NewIter {
+ (e.x)0 = ;
+ (e.x)/* EMPTY */ = <ReadPDA Rules <Trim <Get 1>>>;
+ (e.x)e.z = (Error 'Invalid rule end 'e.x' in line 'e.x'.');
+}
+
+Empty {
+ t.x t.x = ;
+ (e.x) t.y = e.x;
+}
+
+Either {
+ 'F' = 'T';
+ e.x'T'e.y = 'T';
+ e.z = 'F';
+}
+
+Trim {
+  e.x' 'e.xx = e.x<Trim e.xx>;
+  e.Z = e.Z;
+}
+
+Checkset {
+ (e.set) s.1 e.x 
+ , <Mu <Implode e.set 'set'>> :
+ { e.1 s.1 e.2  = <Checkset (e.set) e.x>;
+   e.z = 'F';
+ };
+ (e.set) = 'T';
+}
+
+Numberset {
+ = '0123456789';
+}
+
+Ntermset {
+ = 'ABCDEFGHIJKLMNOPSQRTUVWXYZ';
+}
+
+Termset {
+ = 'qwertyuiopasdfghjklzxcvbnm';
+}
