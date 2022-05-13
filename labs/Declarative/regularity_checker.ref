@@ -1,3 +1,8 @@
+/* Refallic & Turchin-relation-based CFG regularity checker written for the demonstration purposes.
+   REUSE WITH CAUTION!
+   Some functions are very context-sensitive and even minor context changes would invalidate their semantics.
+*/
+
 $ENTRY Go
   {  = <Open 'r' 1 'test_Err1.txt'><RegularityCheckerAux () <ReadGrammar <Trim <Get 1>>> ()><Close 1>; }
 

@@ -1,3 +1,8 @@
+/* Refallic & reflection-based string-rewriting CFG syntax transformer written for the demonstration purposes.
+   REUSE WITH CAUTION!
+   Most functions are very context-sensitive and even minor context changes would invalidate their semantics.
+*/
+
 $ENTRY Go
   {  = <Open 'r' 1 'current_syntax.txt'>
 	  <Open 'r' 4 'my_syntax.txt'>

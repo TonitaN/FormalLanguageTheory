@@ -1,3 +1,8 @@
+/* Not-so-Refallic PDA->CFG induction-based transformer done for the demonstration purposes.
+   REUSE WITH CAUTION!
+   Some functions are mildly context-sensitive and certain context changes would invalidate their semantics.
+*/
+
 $ENTRY Go
   {  , <PDA> :
      { e.x1 (Error e.x2) = <Putout 0 e.x2>;
