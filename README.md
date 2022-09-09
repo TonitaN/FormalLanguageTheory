@@ -22,6 +22,8 @@
 
 Вспомогательные ресурсы:
 
+- [A Taste of Rewrite Systems. N.Dershowitz](https://www.cs.tau.ac.il/~nachum/papers/taste-fixed.pdf)
+- [Total Termination of Term Rewriting. H.Zantema, M.Ferreira](https://research.tue.nl/files/4285313/398276.pdf)
 - [ординальный калькулятор + интерактивный прувер в ординальной ФуМА (ВКР Александра Пискунова, ИУ9)](https://github.com/Vigorge/provskell)
 - [проверка эквивалентности регулярок](https://bakkot.github.io/dfa-lib/regeq.html)
 - [LL(1)-разбор онлайн (навязывается приоритет разбора)](https://www.cs.princeton.edu/courses/archive/spring20/cos320/LL1/)
