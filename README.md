@@ -22,6 +22,8 @@
 
 Вспомогательные ресурсы:
 
+- [On the security of the ping-pong protocols. D.Dolev, S. Even, M. Karp](https://www.sciencedirect.com/science/article/pii/S0019995882904016)
+- [Mathematical Foundations of Automata Theory. J.-E. Pin](https://www.irif.fr/~jep/PDF/MPRI/MPRI.pdf)
 - [A Taste of Rewrite Systems. N.Dershowitz](https://www.cs.tau.ac.il/~nachum/papers/taste-fixed.pdf)
 - [Total Termination of Term Rewriting. H.Zantema, M.Ferreira](https://research.tue.nl/files/4285313/398276.pdf)
 - [ординальный калькулятор + интерактивный прувер в ординальной ФуМА (ВКР Александра Пискунова, ИУ9)](https://github.com/Vigorge/provskell)
@@ -32,7 +34,8 @@
 - [CYK онлайн](https://www.xarg.org/tools/cyk-algorithm/)
 - [Лекция Охотина про LL-языки](https://users.math-cs.spbu.ru/~okhotin/teaching/fg_2019/okhotin_fg_2019_l12.pdf)
 - [Продолжение лекции Охотина](https://users.math-cs.spbu.ru/~okhotin/teaching/fg_2019/okhotin_fg_2019_l13.pdf)
-- [Статья Волкова про синхронизирующиеся автоматы](https://kadm.kmath.ru/files/synchro1.pdf)
+- [Статья Волкова про синхронизирующиеся автоматы (http)](http://kadm.kmath.ru/files/synchro1.pdf)
+- [...а это его же темы курсачей (просто чтобы была возможность сравнить себя с кафедрами теор.инф. провинциальных вузов :) ) - простите, не удержалась](http://kadm.kmath.ru/pages.php?id=volkov_papers) 
 - [Решение регулярных уравнений. Реализация Егора Смирнова (ИУ9)](https://smegdm.github.io/tfl/lab2/regex_system_solver/index.html)
 - [Минимизатор конечных автоматов онлайн](https://aswaddev.github.io/dfa-minimizer/)
 - [Анализатор КС-грамматик онлайн (3 в 1: LL(1), LR(0-1), неоднозначность)](http://mdaines.github.io/grammophone/#/)
