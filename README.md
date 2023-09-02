@@ -7,6 +7,7 @@ DEPRECATED
 
 Вспомогательные ресурсы:
 
+- [Классический учебник по теории автоматов и языков](https://e.famnit.upr.si/pluginfile.php/636821/mod_page/content/8/Automata.pdf)
 - [On the security of the ping-pong protocols. D.Dolev, S. Even, M. Karp](https://www.sciencedirect.com/science/article/pii/S0019995882904016)
 - [Mathematical Foundations of Automata Theory. J.-E. Pin](https://www.irif.fr/~jep/PDF/MPRI/MPRI.pdf)
 - [A Taste of Rewrite Systems. N.Dershowitz](https://www.cs.tau.ac.il/~nachum/papers/taste-fixed.pdf)
