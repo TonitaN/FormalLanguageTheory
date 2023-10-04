@@ -28,7 +28,7 @@ DEPRECATED
 - [Продолжение лекции Охотина](https://users.math-cs.spbu.ru/~okhotin/teaching/fg_2019/okhotin_fg_2019_l13.pdf)
 - [Статья Волкова про синхронизирующиеся автоматы (http)](http://kadm.kmath.ru/files/synchro1.pdf)
 - [...а это его же темы курсачей (просто чтобы была возможность сравнить себя с кафедрами теор.инф. провинциальных вузов :) ) - простите, не удержалась](http://kadm.kmath.ru/pages.php?id=volkov_papers) 
-- [Анализатор КС-грамматик онлайн (3 в 1: LL(1), LR(0-1), неоднозначность)](http://mdaines.github.io/grammophone/#/)
+- [Анализатор КС-грамматик онлайн (3 в 1: LL(1), LR(0-1), неоднозначность)](https://mdaines.github.io/grammophone/#/)
 - [Минимизатор конечных автоматов онлайн](https://aswaddev.github.io/dfa-minimizer/)
 - [Интерактивный тестировщик пользовательской КС-грамматики](https://web.stanford.edu/class/archive/cs/cs103/cs103.1156/tools/cfg/)
 
