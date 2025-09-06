@@ -11,7 +11,7 @@
 
 Вспомогательные ресурсы:
 
-- [Классический учебник по теории автоматов и языков (Хопркрофт, и др.)](https://www-2.dc.uba.ar/staff/becher/Hopcroft-Motwani-Ullman-2001.pdf)
+- [Классический учебник по теории автоматов и языков (Хопкрофт, и др.)](https://www-2.dc.uba.ar/staff/becher/Hopcroft-Motwani-Ullman-2001.pdf)
 - [On the security of the ping-pong protocols. D.Dolev, S. Even, M. Karp](https://www.sciencedirect.com/science/article/pii/S0019995882904016)
 - [Mathematical Foundations of Automata Theory. J.-E. Pin](https://www.irif.fr/~jep/PDF/MPRI/MPRI.pdf)
 - [A Taste of Rewrite Systems. N.Dershowitz](https://www.cs.tau.ac.il/~nachum/papers/taste-fixed.pdf)
